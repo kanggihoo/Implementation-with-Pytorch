@@ -3,6 +3,9 @@ objectdetection/yolov1/data
 VAE/BaseVAE/data/**
 VAE/BaseVAE/output/**
 GAN/SimpleGAN/images/**
+NLP/BERT/data
+NLP/BERT/bert-it-1
+NLP/BERT/datasets
 
 /venv
 

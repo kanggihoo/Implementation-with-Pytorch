@@ -1,7 +1,103 @@
 import random
 import torch
 import itertools
-import torch.utils.data as data
+import tqdm
+
+from pathlib import Path
+import subprocess
+
+class GetDataset():
+    def __init__(self , 
+                 max_len:int = 64 , 
+                 bash_file:str="dataset.sh"):
+        self.MAX_LEN = max_len
+        self.bash_file = "dataset.sh"
+        self.path = Path(__file__).resolve().parent 
+        
+    def build(self):
+        self.download_data()
+        pairs = self.process_data()
+        return pairs 
+        
+    def download_data(self):
+      if not (self.path / "datasets").exists():
+        subprocess.run(["sh", self.bash_file])
+      else:
+        print("데이터가 존재하여 다운로드 하지 않습니다. ")
+
+    def process_data(self):
+        print("데이터 processing 진행")
+        corpus_movie_conv = Path("./datasets/movie_conversations.txt")
+        corpus_movie_lines = Path("./datasets/movie_lines.txt")
+        with open(corpus_movie_conv , "r" , encoding = "iso-8859-1") as f:
+            conv = f.readlines()
+        with open(corpus_movie_lines , "r" , encoding = "iso-8859-1") as f:
+            lines = f.readlines()
+            ## Load data into memory
+        lines_dict = {}
+        for line in lines:
+            object = line.split(" +++$+++ ")
+            id , line = object[0] , object[-1]
+            lines_dict[id] = line
+
+        pairs = []
+        data_iter = tqdm.tqdm(conv , total = len(conv))
+        for con in data_iter:
+            ids = eval(con.split(" +++$+++ ")[-1])
+            for i in range(len(ids)-1):
+                qa_pairs = []
+                q,a = lines_dict[ids[i]].strip() , lines_dict[ids[i+1]].strip()
+                qa_pairs.append(" ".join(q.split()[:self.MAX_LEN]))
+                qa_pairs.append(" ".join(a.split()[:self.MAX_LEN]))
+                pairs.append(qa_pairs)
+                
+        return pairs
+    
+        
+
+    # def build(self , 
+    #           url:str ="http://www.cs.cornell.edu/~cristian/data/cornell_movie_dialogs_corpus.zip",
+    #           remove=True ):
+    #     download_file = self.download(url , remove)
+    #     self.extract(download_file)
+        
+    # def download(self , 
+    #              url:str,
+    #              remove :bool= True,
+    #              ):
+    #     subprocess.run()
+    #     response = requests.get(url , stream=True)
+        
+    #     try: 
+    #         total_size = len(response.headers.get("content-length" , 0))
+    #         block_size = 1024
+    #         print(self.data_path.exists())
+    #         self.data_path.mkdir(parents=True , exist_ok=True)
+    #         print("zip 파일 다운로드")
+    #         zip_file = self.data_path / "download.zip"
+    #         progress_bar = tqdm.tqdm(total=total_size , unit="iB" , unit_scale=True)
+    #         with open(zip_file , "wb") as file:
+    #             for data in response.iter_content(block_size):
+    #                 progress_bar.update(len(data))
+    #                 file.write(data)
+    #         progress_bar.close()
+    #         print("\n압축 파일 다운로드 완료")
+    #     except:
+    #         raise Exception("URL error !")
+    #     return zip_file
+    # def extract(self , download_file:str , extract_path="dataset" , remove:bool=True):
+    #     extract_path = Path(extract_path).resolve()
+    #     file_path= self.data_path / download_file
+    #     if not file_path.exists():
+    #         raise ValueError("다운로드 파일 없음")
+    #     else:
+    #         zip_file =zipfile.ZIpfile(file_path)
+    #         zip_file.extractall(extract_path)
+    #     if remove:
+    #         os.remove(download_file)        
+
+    
+
 class BERTDataset(torch.utils.data.Dataset):
   def __init__(self , pairs , tokenizer , seq_len=64):
     self.lines = pairs
