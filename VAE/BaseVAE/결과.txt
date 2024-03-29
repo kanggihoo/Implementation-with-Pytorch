@@ -1,0 +1,6 @@
+100epoch 결과 
+사용한 데이터셋 
+ # https://thor.robots.ox.ac.uk/~vgg/data/pets/images.tar.gz 
+train데이터:
+val 데이터:
+image_size = 64 ,  batch_size = 64

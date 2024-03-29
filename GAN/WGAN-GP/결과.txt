@@ -1,0 +1,3 @@
+다른 모델은 학습이 계속진행될수록 mode collapse가 나타나는반면
+15번 epoch동안 mode collapse는 발생x
+Discriminator loss가 감소할수록 image quailty가 증가하는 것 확인
