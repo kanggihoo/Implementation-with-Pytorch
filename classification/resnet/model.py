@@ -82,7 +82,7 @@ class ResNet(nn.Module):
     super().__init__()
     # input image size = 224
     self.in_channels = 64
-    self.conv1 = ConvBlock(3, self.in_channels, kernel_size=7, stride=2, padding=1, bias=False) # (3,224,224) = > #(64,112,112)
+    self.conv1 = ConvBlock(3, self.in_channels, kernel_size=7, stride=2, padding=3, bias=False) # (3,224,224) = > #(64,112,112)
     self.conv2 = self._make_layers(block, 64, num_block[0], stride=1) 
     self.conv3 = self._make_layers(block, 128, num_block[1], stride=2)
     self.conv4 = self._make_layers(block, 256, num_block[2], stride=2)
