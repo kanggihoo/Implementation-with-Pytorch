@@ -9,7 +9,3 @@
   
 </ul>
 
-## GAN Model
-|Year|Name|Arxiv|Code|
-|---|---|---|---|
-|1999|ABC|[PDF]()|[![colab](https://colab.research.google.com/assets/colab-badge.svg)]()|
